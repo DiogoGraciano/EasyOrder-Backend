@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseInterceptors,
@@ -34,7 +34,7 @@ export class CustomerController {
     return this.customerService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateCustomerDto: UpdateCustomerDto,

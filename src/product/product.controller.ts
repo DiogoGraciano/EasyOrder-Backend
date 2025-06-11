@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseInterceptors,
@@ -26,9 +26,9 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Query('companyId') companyId?: string) {
-    if (companyId) {
-      return this.productService.findByCompany(companyId);
+  findAll(@Query('enterpriseId') enterpriseId?: string) {
+    if (enterpriseId) {
+      return this.productService.findByenterprise(enterpriseId);
     }
     return this.productService.findAll();
   }
@@ -38,7 +38,7 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateProductDto: UpdateProductDto,
@@ -60,7 +60,7 @@ export class ProductController {
     return this.productService.uploadPhoto(id, file);
   }
 
-  @Patch(':id/stock')
+  @Put(':id/stock')
   updateStock(@Param('id') id: string, @Body('quantity') quantity: number) {
     return this.productService.updateStock(id, quantity);
   }

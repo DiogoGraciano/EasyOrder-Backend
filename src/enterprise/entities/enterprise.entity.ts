@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Order } from 'src/order/entities/order.entity';
+import { Product } from 'src/product/entities/product.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('enterprises')
 export class Enterprise {
@@ -32,4 +34,10 @@ export class Enterprise {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToMany(() => Order, (order) => order.enterprise)
+  orders: Order[];
+
+  @OneToMany(() => Product, (product) => product.enterprise)
+  products: Product[];
 }

@@ -10,10 +10,7 @@ import {
 
 export enum OrderStatus {
   PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  PROCESSING = 'processing',
-  SHIPPED = 'shipped',
-  DELIVERED = 'delivered',
+  COMPLETED = 'completed',
   CANCELLED = 'cancelled',
 }
 
@@ -35,7 +32,7 @@ export class Order {
   customerId: string;
 
   @Column({ type: 'uuid' })
-  companyId: string;
+  enterpriseId: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   totalAmount: number;
@@ -51,8 +48,8 @@ export class Order {
   customer: Customer;
 
   @ManyToOne(() => Enterprise)
-  @JoinColumn({ name: 'companyId' })
-  company: Enterprise;
+  @JoinColumn({ name: 'enterpriseId' })
+  enterprise: Enterprise;
 
   @Column({
     type: 'timestamp',

@@ -1,13 +1,5 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Order } from '../../order/entities/order.entity';
-import { Enterprise } from 'src/enterprise/entities/enterprise.entity';
 
 @Entity('customers')
 export class Customer {
@@ -42,11 +34,7 @@ export class Customer {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => Enterprise)
-  @JoinColumn({ name: 'enterpriseId' })
-  enterprise: Enterprise;
-
-  @OneToMany(() => Order, (order) => order.customerId, {
+  @OneToMany(() => Order, (order) => order.customer, {
     cascade: true,
   })
   orders: Order[];

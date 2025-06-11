@@ -28,7 +28,7 @@ export class Product {
   photo: string;
 
   @Column({ type: 'uuid' })
-  companyId: string;
+  enterpriseId: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -41,6 +41,6 @@ export class Product {
   updatedAt: Date;
 
   @ManyToOne(() => Enterprise)
-  @JoinColumn({ name: 'companyId' })
-  company: Enterprise;
+  @JoinColumn({ name: 'enterpriseId' })
+  enterprise: Enterprise;
 }

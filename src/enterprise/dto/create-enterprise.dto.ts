@@ -26,7 +26,7 @@ export class CreateEnterpriseDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(14, 14)
+  @Length(14, 18)
   cnpj: string;
 
   @IsNotEmpty()

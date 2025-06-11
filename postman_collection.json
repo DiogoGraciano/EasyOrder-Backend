@@ -1,0 +1,1385 @@
+{
+  "info": {
+    "_postman_id": "12345678-1234-1234-1234-123456789012",
+    "name": "Easy Order API - Validações Completas",
+    "description": "Coleção completa com exemplos de todas as validações implementadas nos serviços Customer, Enterprise, Product e Order",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "item": [
+    {
+      "name": "🏢 Enterprise",
+      "item": [
+        {
+          "name": "Create Enterprise",
+          "item": [
+            {
+              "name": "✅ 201 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Tech Solutions Ltda\",\n  \"tradeName\": \"TechSol\",\n  \"cnpj\": \"11.222.333/0001-81\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 123, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Razão social muito curta",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"AB\",\n  \"tradeName\": \"TechSol\",\n  \"cnpj\": \"11.222.333/0001-81\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 123, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - CNPJ inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Tech Solutions Ltda\",\n  \"tradeName\": \"TechSol\",\n  \"cnpj\": \"11.111.111/1111-11\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 123, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Data de fundação futura",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Tech Solutions Ltda\",\n  \"tradeName\": \"TechSol\",\n  \"cnpj\": \"11.222.333/0001-81\",\n  \"foundationDate\": \"2025-12-31\",\n  \"address\": \"Rua das Flores, 123, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises"]
+                }
+              }
+            },
+            {
+              "name": "❌ 409 - CNPJ já existe",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Outra Empresa Ltda\",\n  \"tradeName\": \"OutraEmp\",\n  \"cnpj\": \"11.222.333/0001-81\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 123, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Enterprises",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/enterprises",
+              "host": ["{{baseUrl}}"],
+              "path": ["enterprises"]
+            }
+          }
+        },
+        {
+          "name": "Get Enterprise by ID",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Empresa não encontrada",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "00000000-0000-0000-0000-000000000000"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Enterprise",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Tech Solutions Atualizada Ltda\",\n  \"tradeName\": \"TechSol Pro\",\n  \"cnpj\": \"11.222.333/0001-81\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 456, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - CNPJ inválido",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"Tech Solutions Atualizada Ltda\",\n  \"tradeName\": \"TechSol Pro\",\n  \"cnpj\": \"11.111.111/1111-11\",\n  \"foundationDate\": \"2020-01-15\",\n  \"address\": \"Rua das Flores, 456, Centro, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Enterprise",
+          "item": [
+            {
+              "name": "✅ 204 - Sucesso",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Empresa com produtos/pedidos",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseIdWithProducts}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseIdWithProducts}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload Logo",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "logo.png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}/logo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}", "logo"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Tipo de arquivo inválido",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "document.pdf"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/enterprises/{{enterpriseId}}/logo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["enterprises", "{{enterpriseId}}", "logo"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer",
+      "item": [
+        {
+          "name": "Create Customer",
+          "item": [
+            {
+              "name": "✅ 201 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos\",\n  \"email\": \"joao.silva@gmail.com\",\n  \"phone\": \"(11) 99999-8888\",\n  \"cpf\": \"123.456.789-09\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Nome muito curto",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"J\",\n  \"email\": \"joao.silva@gmail.com\",\n  \"phone\": \"(11) 99999-8888\",\n  \"cpf\": \"123.456.789-09\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - CPF inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos\",\n  \"email\": \"joao.silva@gmail.com\",\n  \"phone\": \"(11) 99999-8888\",\n  \"cpf\": \"111.111.111-11\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Email inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos\",\n  \"email\": \"email-invalido\",\n  \"phone\": \"(11) 99999-8888\",\n  \"cpf\": \"123.456.789-09\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Telefone inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos\",\n  \"email\": \"joao.silva@gmail.com\",\n  \"phone\": \"123456\",\n  \"cpf\": \"123.456.789-09\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            },
+            {
+              "name": "❌ 409 - Email já existe",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Maria Santos\",\n  \"email\": \"joao.silva@gmail.com\",\n  \"phone\": \"(11) 88888-7777\",\n  \"cpf\": \"987.654.321-00\",\n  \"address\": \"Rua das Palmeiras, 456, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers"]
+            }
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Cliente não encontrado",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/customers/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "00000000-0000-0000-0000-000000000000"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Customer",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos Atualizado\",\n  \"email\": \"joao.silva.novo@gmail.com\",\n  \"phone\": \"(11) 88888-7777\",\n  \"cpf\": \"123.456.789-09\",\n  \"address\": \"Rua das Palmeiras, 789, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - CPF inválido",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"João Silva Santos Atualizado\",\n  \"email\": \"joao.silva.novo@gmail.com\",\n  \"phone\": \"(11) 88888-7777\",\n  \"cpf\": \"111.111.111-11\",\n  \"address\": \"Rua das Palmeiras, 789, Jardim Paulista, São Paulo - SP\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Customer",
+          "item": [
+            {
+              "name": "✅ 204 - Sucesso",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Cliente com pedidos",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerIdWithOrders}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerIdWithOrders}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload Photo",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "photo.jpg"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}/photo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}", "photo"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Arquivo muito grande",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "large_photo.jpg"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers/{{customerId}}/photo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["customers", "{{customerId}}", "photo"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📦 Product",
+      "item": [
+        {
+          "name": "Create Product",
+          "item": [
+            {
+              "name": "✅ 201 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23\",\n  \"description\": \"Smartphone Samsung Galaxy S23 com 128GB de armazenamento e câmera de 50MP\",\n  \"price\": 2499.99,\n  \"stock\": 50,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Nome muito curto",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"A\",\n  \"description\": \"Smartphone Samsung Galaxy S23 com 128GB de armazenamento e câmera de 50MP\",\n  \"price\": 2499.99,\n  \"stock\": 50,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Preço negativo",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23\",\n  \"description\": \"Smartphone Samsung Galaxy S23 com 128GB de armazenamento e câmera de 50MP\",\n  \"price\": -100,\n  \"stock\": 50,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Estoque negativo",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23\",\n  \"description\": \"Smartphone Samsung Galaxy S23 com 128GB de armazenamento e câmera de 50MP\",\n  \"price\": 2499.99,\n  \"stock\": -10,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Empresa não encontrada",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23\",\n  \"description\": \"Smartphone Samsung Galaxy S23 com 128GB de armazenamento e câmera de 50MP\",\n  \"price\": 2499.99,\n  \"stock\": 50,\n  \"enterpriseId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            },
+            {
+              "name": "❌ 409 - Nome já existe na empresa",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23\",\n  \"description\": \"Outro smartphone com mesmo nome\",\n  \"price\": 1999.99,\n  \"stock\": 30,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Stock",
+          "item": [
+            {
+              "name": "✅ 200 - Adicionar estoque",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantity\": 25\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}/stock",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}", "stock"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Estoque insuficiente",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantity\": -1000\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}/stock",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}", "stock"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Produto não encontrado",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "00000000-0000-0000-0000-000000000000"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Product",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23 Ultra\",\n  \"description\": \"Smartphone Samsung Galaxy S23 Ultra com 256GB de armazenamento e câmera de 108MP\",\n  \"price\": 3499.99,\n  \"stock\": 30,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Preço inválido",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Smartphone Galaxy S23 Ultra\",\n  \"description\": \"Smartphone Samsung Galaxy S23 Ultra com 256GB de armazenamento e câmera de 108MP\",\n  \"price\": -500,\n  \"stock\": 30,\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Product",
+          "item": [
+            {
+              "name": "✅ 204 - Sucesso",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Produto não encontrado",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "00000000-0000-0000-0000-000000000000"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload Photo",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "product.jpg"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}/photo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}", "photo"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Tipo de arquivo inválido",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "document.txt"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/{{productId}}/photo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "{{productId}}", "photo"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🛒 Order",
+      "item": [
+        {
+          "name": "Create Order",
+          "item": [
+            {
+              "name": "✅ 201 - Sucesso",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-001\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2499.99,\n  \"notes\": \"Entrega urgente\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Produtos duplicados",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-002\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 4999.98,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    },\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Total incorreto",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-003\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 1000.00,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Valor mínimo não atingido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-004\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2.00,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Produto Barato\",\n      \"quantity\": 1,\n      \"unitPrice\": 2.00,\n      \"subtotal\": 2.00\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Data futura",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-005\",\n  \"orderDate\": \"2025-12-31T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2499.99,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Estoque insuficiente",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-006\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 249999.00,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 100,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 249999.00\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Cliente não encontrado",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-007\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"00000000-0000-0000-0000-000000000000\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2499.99,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            },
+            {
+              "name": "❌ 409 - Número do pedido já existe",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-001\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2499.99,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2499.99,\n      \"subtotal\": 2499.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 404 - Pedido não encontrado",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "00000000-0000-0000-0000-000000000000"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Order Status",
+          "item": [
+            {
+              "name": "✅ 200 - Completar pedido",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"completed\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}", "status"]
+                }
+              }
+            },
+            {
+              "name": "✅ 200 - Cancelar pedido",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"cancelled\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}", "status"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Status inválido",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"invalid_status\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}", "status"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Pedido já finalizado",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"completed\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{completedOrderId}}/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{completedOrderId}}", "status"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Order",
+          "item": [
+            {
+              "name": "✅ 200 - Sucesso",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-001-UPD\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2999.99,\n  \"notes\": \"Entrega urgente - Atualizado\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2999.99,\n      \"subtotal\": 2999.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Pedido finalizado não pode ser alterado",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderNumber\": \"PED-2024-001-UPD\",\n  \"orderDate\": \"2024-01-15T10:30:00Z\",\n  \"customerId\": \"{{customerId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\",\n  \"totalAmount\": 2999.99,\n  \"notes\": \"Tentativa de alterar pedido finalizado\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Smartphone Galaxy S23\",\n      \"quantity\": 1,\n      \"unitPrice\": 2999.99,\n      \"subtotal\": 2999.99\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{completedOrderId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{completedOrderId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Order",
+          "item": [
+            {
+              "name": "✅ 204 - Sucesso",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{orderId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{orderId}}"]
+                }
+              }
+            },
+            {
+              "name": "❌ 400 - Pedido finalizado não pode ser excluído",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/{{completedOrderId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["orders", "{{completedOrderId}}"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "enterpriseId",
+      "value": ""
+    },
+    {
+      "key": "enterpriseIdWithProducts",
+      "value": ""
+    },
+    {
+      "key": "customerId",
+      "value": ""
+    },
+    {
+      "key": "customerIdWithOrders",
+      "value": ""
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "completedOrderId",
+      "value": ""
+    }
+  ]
+} 

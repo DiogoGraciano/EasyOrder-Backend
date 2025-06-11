@@ -32,5 +32,5 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsUUID()
-  companyId: string;
+  enterpriseId: string;
 }
