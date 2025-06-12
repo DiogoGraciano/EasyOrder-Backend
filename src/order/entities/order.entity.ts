@@ -1,12 +1,14 @@
-import { Customer } from 'src/customer/entities/customer.entity';
-import { Enterprise } from 'src/enterprise/entities/enterprise.entity';
+import { Customer } from '../../customer/entities/customer.entity';
+import { Enterprise } from '../../enterprise/entities/enterprise.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
   PENDING = 'pending',
@@ -50,6 +52,9 @@ export class Order {
   @ManyToOne(() => Enterprise)
   @JoinColumn({ name: 'enterpriseId' })
   enterprise: Enterprise;
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  items: OrderItem[];
 
   @Column({
     type: 'timestamp',

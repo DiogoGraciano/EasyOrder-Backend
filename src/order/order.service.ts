@@ -203,17 +203,6 @@ export class OrderService {
     if (date > today) {
       throw new BadRequestException('A data do pedido não pode ser no futuro');
     }
-
-    // Não permitir datas muito antigas (30 dias)
-    const maxDaysOld = 30;
-    const diffTime = today.getTime() - date.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays > maxDaysOld) {
-      throw new BadRequestException(
-        `A data do pedido não pode ser anterior a ${maxDaysOld} dias`,
-      );
-    }
   }
 
   private validateOrderNumber(orderNumber: string): void {

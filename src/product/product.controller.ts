@@ -10,6 +10,7 @@ import {
   UploadedFile,
   ValidationPipe,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
@@ -60,7 +61,7 @@ export class ProductController {
     return this.productService.uploadPhoto(id, file);
   }
 
-  @Put(':id/stock')
+  @Patch(':id/stock')
   updateStock(@Param('id') id: string, @Body('quantity') quantity: number) {
     return this.productService.updateStock(id, quantity);
   }
