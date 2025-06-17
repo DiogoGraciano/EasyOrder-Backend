@@ -1,8 +1,8 @@
-import { 
-  Injectable, 
-  NotFoundException, 
+import {
+  Injectable,
+  NotFoundException,
   BadRequestException,
-  ConflictException 
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,7 +27,9 @@ export class CustomerService {
     return await this.customerRepository.save(customer);
   }
 
-  private async validateCustomerCreation(createCustomerDto: CreateCustomerDto): Promise<void> {
+  private async validateCustomerCreation(
+    createCustomerDto: CreateCustomerDto,
+  ): Promise<void> {
     // Validar dados básicos
     this.validateBasicData(createCustomerDto);
 
@@ -44,32 +46,44 @@ export class CustomerService {
     await this.validateUniqueness(createCustomerDto);
   }
 
-  private validateBasicData(customerDto: CreateCustomerDto | UpdateCustomerDto): void {
+  private validateBasicData(
+    customerDto: CreateCustomerDto | UpdateCustomerDto,
+  ): void {
     // Validar nome
     if (customerDto.name) {
       if (customerDto.name.trim().length < 2) {
-        throw new BadRequestException('O nome deve ter pelo menos 2 caracteres');
+        throw new BadRequestException(
+          'O nome deve ter pelo menos 2 caracteres',
+        );
       }
 
       if (customerDto.name.length > 255) {
-        throw new BadRequestException('O nome não pode ter mais de 255 caracteres');
+        throw new BadRequestException(
+          'O nome não pode ter mais de 255 caracteres',
+        );
       }
 
       // Validar se contém apenas letras e espaços
       const namePattern = /^[a-zA-ZÀ-ÿ\s]+$/;
       if (!namePattern.test(customerDto.name)) {
-        throw new BadRequestException('O nome deve conter apenas letras e espaços');
+        throw new BadRequestException(
+          'O nome deve conter apenas letras e espaços',
+        );
       }
     }
 
     // Validar endereço
     if (customerDto.address) {
       if (customerDto.address.trim().length < 10) {
-        throw new BadRequestException('O endereço deve ter pelo menos 10 caracteres');
+        throw new BadRequestException(
+          'O endereço deve ter pelo menos 10 caracteres',
+        );
       }
 
       if (customerDto.address.length > 500) {
-        throw new BadRequestException('O endereço não pode ter mais de 500 caracteres');
+        throw new BadRequestException(
+          'O endereço não pode ter mais de 500 caracteres',
+        );
       }
     }
   }
@@ -113,7 +127,9 @@ export class CustomerService {
     remainder = 11 - (sum % 11);
     let digit2 = remainder >= 10 ? 0 : remainder;
 
-    return digit1 === parseInt(cpf.charAt(9)) && digit2 === parseInt(cpf.charAt(10));
+    return (
+      digit1 === parseInt(cpf.charAt(9)) && digit2 === parseInt(cpf.charAt(10))
+    );
   }
 
   private validateEmail(email: string): void {
@@ -127,11 +143,18 @@ export class CustomerService {
 
     // Validar comprimento
     if (email.length > 255) {
-      throw new BadRequestException('Email não pode ter mais de 255 caracteres');
+      throw new BadRequestException(
+        'Email não pode ter mais de 255 caracteres',
+      );
     }
 
     // Validar domínios comuns
-    const commonDomains = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'];
+    const commonDomains = [
+      'gmail.com',
+      'hotmail.com',
+      'yahoo.com',
+      'outlook.com',
+    ];
     const domain = email.split('@')[1];
     if (domain && !commonDomains.includes(domain) && !domain.includes('.')) {
       throw new BadRequestException('Domínio de email suspeito');
@@ -157,11 +180,72 @@ export class CustomerService {
     // Validar código de área
     const areaCode = cleanPhone.substring(0, 2);
     const validAreaCodes = [
-      '11', '12', '13', '14', '15', '16', '17', '18', '19', // SP
-      '21', '22', '24', // RJ
-      '27', '28', // ES
-      '31', '32', '33', '34', '35', '37', '38', // MG
-      // Adicionar mais códigos conforme necessário
+      '11',
+      '12',
+      '13',
+      '14',
+      '15',
+      '16',
+      '17',
+      '18',
+      '19',
+      '21',
+      '22',
+      '24',
+      '27',
+      '28',
+      '31',
+      '32',
+      '33',
+      '34',
+      '35',
+      '37',
+      '38',
+      '41',
+      '42',
+      '43',
+      '44',
+      '45',
+      '46',
+      '47',
+      '48',
+      '49',
+      '51',
+      '53',
+      '54',
+      '55',
+      '61',
+      '62',
+      '63',
+      '64',
+      '65',
+      '67',
+      '68',
+      '69',
+      '71',
+      '73',
+      '74',
+      '75',
+      '77',
+      '79',
+      '81',
+      '87',
+      '82',
+      '83',
+      '84',
+      '85',
+      '88',
+      '86',
+      '89',
+      '91',
+      '93',
+      '94',
+      '92',
+      '97',
+      '95',
+      '96',
+      '98',
+      '99',
     ];
 
     if (!validAreaCodes.includes(areaCode)) {
@@ -169,11 +253,13 @@ export class CustomerService {
     }
   }
 
-  private async validateUniqueness(customerDto: CreateCustomerDto): Promise<void> {
+  private async validateUniqueness(
+    customerDto: CreateCustomerDto,
+  ): Promise<void> {
     // Verificar email único
     if (customerDto.email) {
       const existingByEmail = await this.customerRepository.findOne({
-        where: { email: customerDto.email }
+        where: { email: customerDto.email },
       });
 
       if (existingByEmail) {
@@ -184,7 +270,7 @@ export class CustomerService {
     // Verificar CPF único
     if (customerDto.cpf) {
       const existingByCPF = await this.customerRepository.findOne({
-        where: { cpf: customerDto.cpf }
+        where: { cpf: customerDto.cpf },
       });
 
       if (existingByCPF) {
@@ -237,15 +323,27 @@ export class CustomerService {
     this.validateBasicData(updateCustomerDto);
 
     // Validar CPF se alterado
-    if (updateCustomerDto.cpf && updateCustomerDto.cpf !== existingCustomer.cpf) {
+    if (
+      updateCustomerDto.cpf &&
+      updateCustomerDto.cpf !== existingCustomer.cpf
+    ) {
       this.validateCPF(updateCustomerDto.cpf);
-      await this.validateCPFUniqueness(updateCustomerDto.cpf, existingCustomer.id);
+      await this.validateCPFUniqueness(
+        updateCustomerDto.cpf,
+        existingCustomer.id,
+      );
     }
 
     // Validar email se alterado
-    if (updateCustomerDto.email && updateCustomerDto.email !== existingCustomer.email) {
+    if (
+      updateCustomerDto.email &&
+      updateCustomerDto.email !== existingCustomer.email
+    ) {
       this.validateEmail(updateCustomerDto.email);
-      await this.validateEmailUniqueness(updateCustomerDto.email, existingCustomer.id);
+      await this.validateEmailUniqueness(
+        updateCustomerDto.email,
+        existingCustomer.id,
+      );
     }
 
     // Validar telefone se alterado
@@ -254,9 +352,12 @@ export class CustomerService {
     }
   }
 
-  private async validateEmailUniqueness(email: string, excludeId: string): Promise<void> {
+  private async validateEmailUniqueness(
+    email: string,
+    excludeId: string,
+  ): Promise<void> {
     const existingCustomer = await this.customerRepository.findOne({
-      where: { email }
+      where: { email },
     });
 
     if (existingCustomer && existingCustomer.id !== excludeId) {
@@ -264,9 +365,12 @@ export class CustomerService {
     }
   }
 
-  private async validateCPFUniqueness(cpf: string, excludeId: string): Promise<void> {
+  private async validateCPFUniqueness(
+    cpf: string,
+    excludeId: string,
+  ): Promise<void> {
     const existingCustomer = await this.customerRepository.findOne({
-      where: { cpf }
+      where: { cpf },
     });
 
     if (existingCustomer && existingCustomer.id !== excludeId) {
@@ -280,7 +384,7 @@ export class CustomerService {
     // Verificar se o cliente tem pedidos
     if (customer.orders && customer.orders.length > 0) {
       throw new BadRequestException(
-        'Não é possível excluir um cliente que possui pedidos'
+        'Não é possível excluir um cliente que possui pedidos',
       );
     }
 
@@ -315,7 +419,7 @@ export class CustomerService {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException(
-        'Tipo de arquivo inválido. Permitidos: JPEG, PNG, WebP'
+        'Tipo de arquivo inválido. Permitidos: JPEG, PNG, WebP',
       );
     }
 
