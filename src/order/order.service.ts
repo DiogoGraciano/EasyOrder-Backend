@@ -31,12 +31,10 @@ export class OrderService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    // Validações personalizadas de negócio
     await this.validateOrderCreation(createOrderDto);
 
     const { items, ...orderData } = createOrderDto;
 
-    // Verificar se o número do pedido já existe
     await this.validateUniqueOrderNumber(orderData.orderNumber);
 
     const order = this.orderRepository.create(orderData);
@@ -57,44 +55,33 @@ export class OrderService {
   private async validateOrderCreation(
     createOrderDto: CreateOrderDto,
   ): Promise<void> {
-    // Validar se o cliente existe
     await this.validateCustomerExists(createOrderDto.customerId);
 
-    // Validar se a empresa existe
     await this.validateEnterpriseExists(createOrderDto.enterpriseId);
 
-    // Validações dos itens
     this.validateOrderItems(createOrderDto.items);
 
-    // Validar produtos e estoque
     await this.validateProductsAndStock(createOrderDto.items);
 
-    // Validar se os produtos pertencem à empresa
     await this.validateProductsBelongToEnterprise(
       createOrderDto.items,
       createOrderDto.enterpriseId,
     );
 
-    // Validar cálculos do pedido
     this.validateOrderCalculations(createOrderDto);
 
-    // Validações de regras de negócio
     this.validateBusinessRules(createOrderDto);
   }
 
   private validateOrderItems(items: CreateOrderItemDto[]): void {
-    // Validar se há pelo menos um item
     if (!items || items.length === 0) {
       throw new BadRequestException('O pedido deve ter pelo menos um item');
     }
 
-    // Validar se não há produtos duplicados
     this.validateNoDuplicateProducts(items);
 
-    // Validar quantidade total
     this.validateTotalQuantity(items);
 
-    // Validar cada item individualmente
     items.forEach((item, index) => {
       this.validateOrderItem(item, index);
     });
@@ -127,7 +114,6 @@ export class OrderService {
   private validateOrderItem(item: CreateOrderItemDto, index: number): void {
     const itemPrefix = `Item ${index + 1}`;
 
-    // Validar quantidade
     if (item.quantity <= 0) {
       throw new BadRequestException(
         `${itemPrefix}: A quantidade deve ser maior que zero`,
@@ -140,7 +126,6 @@ export class OrderService {
       );
     }
 
-    // Validar preços
     if (item.unitPrice < 0) {
       throw new BadRequestException(
         `${itemPrefix}: O preço unitário não pode ser negativo`,
@@ -153,7 +138,6 @@ export class OrderService {
       );
     }
 
-    // Validar se o subtotal está correto
     const expectedSubtotal = item.quantity * item.unitPrice;
     if (Math.abs(item.subtotal - expectedSubtotal) > 0.01) {
       throw new BadRequestException(
@@ -161,7 +145,6 @@ export class OrderService {
       );
     }
 
-    // Validar nome do produto
     if (!item.productName || item.productName.trim().length === 0) {
       throw new BadRequestException(
         `${itemPrefix}: O nome do produto é obrigatório`,
@@ -176,13 +159,10 @@ export class OrderService {
   }
 
   private validateBusinessRules(createOrderDto: CreateOrderDto): void {
-    // Validar valor mínimo do pedido
     this.validateMinOrderValue(createOrderDto.totalAmount);
 
-    // Validar data do pedido
     this.validateOrderDate(createOrderDto.orderDate);
 
-    // Validar número do pedido
     this.validateOrderNumber(createOrderDto.orderNumber);
   }
 
@@ -198,7 +178,6 @@ export class OrderService {
     const date = new Date(orderDate);
     const today = new Date();
 
-    // Não permitir datas futuras
     today.setHours(23, 59, 59, 999);
     if (date > today) {
       throw new BadRequestException('A data do pedido não pode ser no futuro');
@@ -216,7 +195,6 @@ export class OrderService {
       );
     }
 
-    // Validar formato do número do pedido (apenas letras, números e hífens)
     const validFormat = /^[A-Za-z0-9-]+$/;
     if (!validFormat.test(orderNumber)) {
       throw new BadRequestException(
@@ -263,7 +241,6 @@ export class OrderService {
         );
       }
 
-      // Verificar se há estoque suficiente
       if (product.stock < item.quantity) {
         throw new BadRequestException(
           `Estoque insuficiente para o produto ${product.name}. ` +
@@ -271,7 +248,6 @@ export class OrderService {
         );
       }
 
-      // Verificar se o preço unitário está correto
       if (Math.abs(product.price - item.unitPrice) > 0.01) {
         throw new BadRequestException(
           `Preço unitário incorreto para o produto ${product.name}. ` +
@@ -279,7 +255,6 @@ export class OrderService {
         );
       }
 
-      // Verificar se o nome do produto está correto
       if (product.name !== item.productName) {
         throw new BadRequestException(
           `Nome do produto incorreto. Esperado: ${product.name}, Informado: ${item.productName}`,
@@ -309,7 +284,6 @@ export class OrderService {
     let calculatedTotal = 0;
 
     for (const item of createOrderDto.items) {
-      // Verificar se o subtotal está correto
       const expectedSubtotal = item.quantity * item.unitPrice;
       if (Math.abs(item.subtotal - expectedSubtotal) > 0.01) {
         throw new BadRequestException(
@@ -321,7 +295,6 @@ export class OrderService {
       calculatedTotal += item.subtotal;
     }
 
-    // Verificar se o total do pedido está correto
     if (Math.abs(createOrderDto.totalAmount - calculatedTotal) > 0.01) {
       throw new BadRequestException(
         `Total do pedido incorreto. ` +
@@ -349,7 +322,6 @@ export class OrderService {
   }
 
   async findByCustomer(customerId: string): Promise<Order[]> {
-    // Validar se o cliente existe
     await this.validateCustomerExists(customerId);
 
     return await this.orderRepository.find({
@@ -359,7 +331,6 @@ export class OrderService {
   }
 
   async findByenterprise(enterpriseId: string): Promise<Order[]> {
-    // Validar se a empresa existe
     await this.validateEnterpriseExists(enterpriseId);
 
     return await this.orderRepository.find({
@@ -388,18 +359,30 @@ export class OrderService {
   async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
     const order = await this.findOne(id);
 
-    // Validações específicas para atualização
     await this.validateOrderUpdate(order, updateOrderDto);
 
     Object.assign(order, updateOrderDto);
-    return await this.orderRepository.save(order);
+
+    const savedOrder = await this.orderRepository.save(order);
+
+    await this.orderItemRepository.remove(order.items);
+
+    const orderItems = order.items.map((item) =>
+      this.orderItemRepository.create({
+        ...item,
+        orderId: savedOrder.id,
+      }),
+    );
+
+    await this.orderItemRepository.save(orderItems);
+
+    return this.findOne(savedOrder.id);
   }
 
   private async validateOrderUpdate(
     existingOrder: Order,
     updateOrderDto: UpdateOrderDto,
   ): Promise<void> {
-    // Não permitir alterar pedidos já completados ou cancelados
     if (existingOrder.status === OrderStatus.COMPLETED) {
       throw new BadRequestException(
         'Não é possível alterar um pedido já completado',
@@ -412,7 +395,6 @@ export class OrderService {
       );
     }
 
-    // Se está alterando o número do pedido, verificar se não existe outro com o mesmo número
     if (
       updateOrderDto.orderNumber &&
       updateOrderDto.orderNumber !== existingOrder.orderNumber
@@ -421,7 +403,6 @@ export class OrderService {
       await this.validateUniqueOrderNumber(updateOrderDto.orderNumber);
     }
 
-    // Se está alterando o cliente, validar se existe
     if (
       updateOrderDto.customerId &&
       updateOrderDto.customerId !== existingOrder.customerId
@@ -429,7 +410,6 @@ export class OrderService {
       await this.validateCustomerExists(updateOrderDto.customerId);
     }
 
-    // Se está alterando a empresa, validar se existe
     if (
       updateOrderDto.enterpriseId &&
       updateOrderDto.enterpriseId !== existingOrder.enterpriseId
@@ -437,7 +417,6 @@ export class OrderService {
       await this.validateEnterpriseExists(updateOrderDto.enterpriseId);
     }
 
-    // Validar transições de status
     if (
       updateOrderDto.status &&
       updateOrderDto.status !== existingOrder.status
@@ -448,14 +427,16 @@ export class OrderService {
       );
     }
 
-    // Se está alterando o valor total, validar valor mínimo
     if (updateOrderDto.totalAmount !== undefined) {
       this.validateMinOrderValue(updateOrderDto.totalAmount);
     }
 
-    // Se está alterando a data, validar
     if (updateOrderDto.orderDate) {
       this.validateOrderDate(updateOrderDto.orderDate);
+    }
+
+    if (updateOrderDto.items) {
+      this.validateOrderItems(updateOrderDto.items);
     }
   }
 
@@ -465,8 +446,8 @@ export class OrderService {
   ): void {
     const validTransitions: Record<OrderStatus, OrderStatus[]> = {
       [OrderStatus.PENDING]: [OrderStatus.COMPLETED, OrderStatus.CANCELLED],
-      [OrderStatus.COMPLETED]: [], // Não pode sair do status completado
-      [OrderStatus.CANCELLED]: [], // Não pode sair do status cancelado
+      [OrderStatus.COMPLETED]: [],
+      [OrderStatus.CANCELLED]: [],
     };
 
     if (!validTransitions[currentStatus].includes(newStatus)) {
@@ -479,7 +460,6 @@ export class OrderService {
   async remove(id: string): Promise<void> {
     const order = await this.findOne(id);
 
-    // Não permitir excluir pedidos completados
     if (order.status === OrderStatus.COMPLETED) {
       throw new BadRequestException(
         'Não é possível excluir um pedido completado',

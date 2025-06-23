@@ -20,7 +20,6 @@ export class CustomerService {
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    // Validações personalizadas
     await this.validateCustomerCreation(createCustomerDto);
 
     const customer = this.customerRepository.create(createCustomerDto);
@@ -30,26 +29,21 @@ export class CustomerService {
   private async validateCustomerCreation(
     createCustomerDto: CreateCustomerDto,
   ): Promise<void> {
-    // Validar dados básicos
+
     this.validateBasicData(createCustomerDto);
 
-    // Validar CPF
     this.validateCPF(createCustomerDto.cpf);
 
-    // Validar email
     this.validateEmail(createCustomerDto.email);
 
-    // Validar telefone
     this.validatePhone(createCustomerDto.phone);
 
-    // Validar unicidade
     await this.validateUniqueness(createCustomerDto);
   }
 
   private validateBasicData(
     customerDto: CreateCustomerDto | UpdateCustomerDto,
   ): void {
-    // Validar nome
     if (customerDto.name) {
       if (customerDto.name.trim().length < 2) {
         throw new BadRequestException(
@@ -63,7 +57,6 @@ export class CustomerService {
         );
       }
 
-      // Validar se contém apenas letras e espaços
       const namePattern = /^[a-zA-ZÀ-ÿ\s]+$/;
       if (!namePattern.test(customerDto.name)) {
         throw new BadRequestException(
@@ -72,7 +65,6 @@ export class CustomerService {
       }
     }
 
-    // Validar endereço
     if (customerDto.address) {
       if (customerDto.address.trim().length < 10) {
         throw new BadRequestException(
@@ -91,27 +83,22 @@ export class CustomerService {
   private validateCPF(cpf: string): void {
     if (!cpf) return;
 
-    // Remover caracteres não numéricos
     const cleanCPF = cpf.replace(/\D/g, '');
 
-    // Validar formato
     if (cleanCPF.length !== 11) {
       throw new BadRequestException('CPF deve ter 11 dígitos');
     }
 
-    // Validar se não são todos os dígitos iguais
     if (/^(\d)\1{10}$/.test(cleanCPF)) {
       throw new BadRequestException('CPF inválido');
     }
 
-    // Validar dígitos verificadores
     if (!this.isValidCPF(cleanCPF)) {
       throw new BadRequestException('CPF inválido');
     }
   }
 
   private isValidCPF(cpf: string): boolean {
-    // Calcular primeiro dígito verificador
     let sum = 0;
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cpf.charAt(i)) * (10 - i);
@@ -119,7 +106,6 @@ export class CustomerService {
     let remainder = 11 - (sum % 11);
     let digit1 = remainder >= 10 ? 0 : remainder;
 
-    // Calcular segundo dígito verificador
     sum = 0;
     for (let i = 0; i < 10; i++) {
       sum += parseInt(cpf.charAt(i)) * (11 - i);
@@ -135,49 +121,31 @@ export class CustomerService {
   private validateEmail(email: string): void {
     if (!email) return;
 
-    // Validar formato básico
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
       throw new BadRequestException('Formato de email inválido');
     }
 
-    // Validar comprimento
     if (email.length > 255) {
       throw new BadRequestException(
         'Email não pode ter mais de 255 caracteres',
       );
-    }
-
-    // Validar domínios comuns
-    const commonDomains = [
-      'gmail.com',
-      'hotmail.com',
-      'yahoo.com',
-      'outlook.com',
-    ];
-    const domain = email.split('@')[1];
-    if (domain && !commonDomains.includes(domain) && !domain.includes('.')) {
-      throw new BadRequestException('Domínio de email suspeito');
     }
   }
 
   private validatePhone(phone: string): void {
     if (!phone) return;
 
-    // Remover caracteres não numéricos
     const cleanPhone = phone.replace(/\D/g, '');
 
-    // Validar formato (10 ou 11 dígitos)
     if (cleanPhone.length < 10 || cleanPhone.length > 11) {
       throw new BadRequestException('Telefone deve ter 10 ou 11 dígitos');
     }
 
-    // Validar se não são todos os dígitos iguais
     if (/^(\d)\1+$/.test(cleanPhone)) {
       throw new BadRequestException('Telefone inválido');
     }
 
-    // Validar código de área
     const areaCode = cleanPhone.substring(0, 2);
     const validAreaCodes = [
       '11',
@@ -255,8 +223,7 @@ export class CustomerService {
 
   private async validateUniqueness(
     customerDto: CreateCustomerDto,
-  ): Promise<void> {
-    // Verificar email único
+  ): Promise<void> {  
     if (customerDto.email) {
       const existingByEmail = await this.customerRepository.findOne({
         where: { email: customerDto.email },
@@ -267,7 +234,6 @@ export class CustomerService {
       }
     }
 
-    // Verificar CPF único
     if (customerDto.cpf) {
       const existingByCPF = await this.customerRepository.findOne({
         where: { cpf: customerDto.cpf },
@@ -308,7 +274,6 @@ export class CustomerService {
   ): Promise<Customer> {
     const customer = await this.findOne(id);
 
-    // Validações para atualização
     await this.validateCustomerUpdate(customer, updateCustomerDto);
 
     Object.assign(customer, updateCustomerDto);
@@ -319,10 +284,8 @@ export class CustomerService {
     existingCustomer: Customer,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<void> {
-    // Validar dados básicos
     this.validateBasicData(updateCustomerDto);
 
-    // Validar CPF se alterado
     if (
       updateCustomerDto.cpf &&
       updateCustomerDto.cpf !== existingCustomer.cpf
@@ -334,7 +297,6 @@ export class CustomerService {
       );
     }
 
-    // Validar email se alterado
     if (
       updateCustomerDto.email &&
       updateCustomerDto.email !== existingCustomer.email
@@ -346,7 +308,6 @@ export class CustomerService {
       );
     }
 
-    // Validar telefone se alterado
     if (updateCustomerDto.phone) {
       this.validatePhone(updateCustomerDto.phone);
     }
@@ -381,14 +342,12 @@ export class CustomerService {
   async remove(id: string): Promise<void> {
     const customer = await this.findOne(id);
 
-    // Verificar se o cliente tem pedidos
     if (customer.orders && customer.orders.length > 0) {
       throw new BadRequestException(
         'Não é possível excluir um cliente que possui pedidos',
       );
     }
 
-    // Delete photo from R2 if exists
     if (customer.photo) {
       await this.fileUploadService.deleteFile(customer.photo);
     }
@@ -399,15 +358,12 @@ export class CustomerService {
   async uploadPhoto(id: string, file: Express.Multer.File): Promise<Customer> {
     const customer = await this.findOne(id);
 
-    // Validar arquivo
     this.validatePhotoFile(file);
 
-    // Delete old photo if exists
     if (customer.photo) {
       await this.fileUploadService.deleteFile(customer.photo);
     }
 
-    // Upload new photo
     const photoUrl = await this.fileUploadService.uploadFile(file, 'customers');
     customer.photo = photoUrl;
 
@@ -415,7 +371,6 @@ export class CustomerService {
   }
 
   private validatePhotoFile(file: Express.Multer.File): void {
-    // Validar tipo de arquivo
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException(
@@ -423,15 +378,9 @@ export class CustomerService {
       );
     }
 
-    // Validar tamanho (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new BadRequestException('Arquivo muito grande. Máximo: 5MB');
-    }
-
-    // Validar dimensões mínimas (se possível)
-    if (file.buffer) {
-      // Aqui você poderia adicionar validação de dimensões usando uma biblioteca como sharp
     }
   }
 }

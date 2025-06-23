@@ -23,7 +23,6 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    // Validações personalizadas
     await this.validateProductCreation(createProductDto);
 
     const product = this.productRepository.create(createProductDto);
@@ -33,19 +32,14 @@ export class ProductService {
   private async validateProductCreation(
     createProductDto: CreateProductDto,
   ): Promise<void> {
-    // Validar dados básicos
     this.validateBasicData(createProductDto);
 
-    // Validar preço
     this.validatePrice(createProductDto.price);
 
-    // Validar estoque
     this.validateStock(createProductDto.stock);
 
-    // Validar se a empresa existe
     await this.validateEnterpriseExists(createProductDto.enterpriseId);
 
-    // Validar unicidade do nome por empresa
     await this.validateNameUniqueness(
       createProductDto.name,
       createProductDto.enterpriseId,
@@ -55,7 +49,6 @@ export class ProductService {
   private validateBasicData(
     productDto: CreateProductDto | UpdateProductDto,
   ): void {
-    // Validar nome
     if (productDto.name) {
       if (productDto.name.trim().length < 2) {
         throw new BadRequestException(
@@ -69,7 +62,6 @@ export class ProductService {
         );
       }
 
-      // Validar caracteres especiais
       const namePattern = /^[a-zA-ZÀ-ÿ0-9\s\-_.()]+$/;
       if (!namePattern.test(productDto.name)) {
         throw new BadRequestException(
@@ -78,7 +70,6 @@ export class ProductService {
       }
     }
 
-    // Validar descrição
     if (productDto.description) {
       if (productDto.description.trim().length < 10) {
         throw new BadRequestException(
@@ -105,14 +96,12 @@ export class ProductService {
       throw new BadRequestException('O preço deve ser maior que zero');
     }
 
-    // Validar valor máximo (R$ 1.000.000)
     if (price > 1000000) {
       throw new BadRequestException(
         'O preço não pode ser superior a R$ 1.000.000,00',
       );
     }
 
-    // Validar casas decimais (máximo 2)
     const decimalPlaces = (price.toString().split('.')[1] || '').length;
     if (decimalPlaces > 2) {
       throw new BadRequestException(
@@ -128,14 +117,12 @@ export class ProductService {
       throw new BadRequestException('O estoque não pode ser negativo');
     }
 
-    // Validar estoque máximo
     if (stock > 999999) {
       throw new BadRequestException(
         'O estoque não pode ser superior a 999.999 unidades',
       );
     }
-
-    // Validar se é número inteiro
+    
     if (!Number.isInteger(stock)) {
       throw new BadRequestException('O estoque deve ser um número inteiro');
     }
@@ -184,7 +171,6 @@ export class ProductService {
       throw new BadRequestException('ID da empresa é obrigatório');
     }
 
-    // Validar se a empresa existe
     await this.validateEnterpriseExists(enterpriseId);
 
     return await this.productRepository.find({
@@ -216,7 +202,6 @@ export class ProductService {
   ): Promise<Product> {
     const product = await this.findOne(id);
 
-    // Validações para atualização
     await this.validateProductUpdate(product, updateProductDto);
 
     Object.assign(product, updateProductDto);
@@ -227,20 +212,16 @@ export class ProductService {
     existingProduct: Product,
     updateProductDto: UpdateProductDto,
   ): Promise<void> {
-    // Validar dados básicos
     this.validateBasicData(updateProductDto);
 
-    // Validar preço se alterado
     if (updateProductDto.price !== undefined) {
       this.validatePrice(updateProductDto.price);
     }
 
-    // Validar estoque se alterado
     if (updateProductDto.stock !== undefined) {
       this.validateStock(updateProductDto.stock);
     }
 
-    // Validar empresa se alterada
     if (
       updateProductDto.enterpriseId &&
       updateProductDto.enterpriseId !== existingProduct.enterpriseId
@@ -248,7 +229,6 @@ export class ProductService {
       await this.validateEnterpriseExists(updateProductDto.enterpriseId);
     }
 
-    // Validar nome se alterado
     if (
       updateProductDto.name &&
       updateProductDto.name !== existingProduct.name
@@ -266,14 +246,6 @@ export class ProductService {
   async remove(id: string): Promise<Product> {
     const product = await this.findOne(id);
 
-    // Verificar se o produto está sendo usado em pedidos
-    // Esta validação seria implementada quando houver relacionamento com OrderItem
-    // if (product.orderItems && product.orderItems.length > 0) {
-    //   throw new BadRequestException(
-    //     'Não é possível excluir um produto que está sendo usado em pedidos'
-    //   );
-    // }
-
     if (product.photo) {
       await this.fileUploadService.deleteFile(product.photo);
     }
@@ -285,7 +257,6 @@ export class ProductService {
   async uploadPhoto(id: string, file: Express.Multer.File): Promise<Product> {
     const product = await this.findOne(id);
 
-    // Validar arquivo
     this.validatePhotoFile(file);
 
     if (product.photo) {
@@ -299,7 +270,6 @@ export class ProductService {
   }
 
   private validatePhotoFile(file: Express.Multer.File): void {
-    // Validar tipo de arquivo
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException(
@@ -307,20 +277,17 @@ export class ProductService {
       );
     }
 
-    // Validar tamanho (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new BadRequestException('Arquivo muito grande. Máximo: 5MB');
     }
 
-    // Validar nome do arquivo
     if (file.originalname.length > 255) {
       throw new BadRequestException(
         'Nome do arquivo muito longo. Máximo: 255 caracteres',
       );
     }
 
-    // Validar extensão do arquivo
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
     const fileExtension = file.originalname
       .toLowerCase()
@@ -336,7 +303,6 @@ export class ProductService {
   async updateStock(id: string, quantity: number): Promise<Product> {
     const product = await this.findOne(id);
 
-    // Validar quantidade
     if (!Number.isInteger(quantity)) {
       throw new BadRequestException('A quantidade deve ser um número inteiro');
     }
@@ -345,24 +311,20 @@ export class ProductService {
       throw new BadRequestException('A quantidade deve ser diferente de zero');
     }
 
-    // Calcular novo estoque
     const newStock = product.stock + quantity;
 
-    // Validar se o novo estoque não fica negativo
     if (newStock < 0) {
       throw new BadRequestException(
         `Estoque insuficiente. Estoque atual: ${product.stock}, Tentativa de redução: ${Math.abs(quantity)}`,
       );
     }
 
-    // Validar estoque máximo
     this.validateStock(newStock);
 
     product.stock = newStock;
     return await this.productRepository.save(product);
   }
 
-  // Método para validar disponibilidade de estoque (usado pelo OrderService)
   async validateStockAvailability(
     productId: string,
     requestedQuantity: number,
@@ -377,13 +339,11 @@ export class ProductService {
     }
   }
 
-  // Método para reservar estoque (usado pelo OrderService)
   async reserveStock(productId: string, quantity: number): Promise<void> {
     await this.validateStockAvailability(productId, quantity);
     await this.updateStock(productId, -quantity);
   }
 
-  // Método para liberar estoque (usado em cancelamentos)
   async releaseStock(productId: string, quantity: number): Promise<void> {
     await this.updateStock(productId, quantity);
   }
