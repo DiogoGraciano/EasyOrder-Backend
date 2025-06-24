@@ -19,10 +19,23 @@ export class EnterpriseService {
     private fileUploadService: FileUploadService,
   ) {}
 
-  async create(createEnterpriseDto: CreateEnterpriseDto): Promise<Enterprise> {
+  async create(
+    createEnterpriseDto: CreateEnterpriseDto,
+    file?: Express.Multer.File,
+  ): Promise<Enterprise> {
     await this.validateEnterpriseCreation(createEnterpriseDto);
 
     const enterprise = this.enterpriseRepository.create(createEnterpriseDto);
+
+    if (file) {
+      this.validateLogoFile(file);
+      const logoUrl = await this.fileUploadService.uploadFile(
+        file,
+        'enterprises',
+      );
+      enterprise.logo = logoUrl;
+    }
+
     return await this.enterpriseRepository.save(enterprise);
   }
 
@@ -208,12 +221,26 @@ export class EnterpriseService {
   async update(
     id: string,
     updateEnterpriseDto: UpdateEnterpriseDto,
+    file?: Express.Multer.File,
   ): Promise<Enterprise> {
     const enterprise = await this.findOne(id);
 
     await this.validateEnterpriseUpdate(enterprise, updateEnterpriseDto);
 
     Object.assign(enterprise, updateEnterpriseDto);
+
+    if (file) {
+      if (enterprise.logo) {
+        await this.fileUploadService.deleteFile(enterprise.logo);
+      }
+
+      this.validateLogoFile(file);
+      const logoUrl = await this.fileUploadService.uploadFile(
+        file,
+        'enterprises',
+      );
+      enterprise.logo = logoUrl;
+    }
     return await this.enterpriseRepository.save(enterprise);
   }
 

@@ -20,8 +20,12 @@ export class EnterpriseController {
   constructor(private readonly enterpriseService: EnterpriseService) {}
 
   @Post()
-  create(@Body(ValidationPipe) createEnterpriseDto: CreateEnterpriseDto) {
-    return this.enterpriseService.create(createEnterpriseDto);
+  @UseInterceptors(FileInterceptor('logo'))
+  create(
+    @Body(ValidationPipe) createEnterpriseDto: CreateEnterpriseDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.enterpriseService.create(createEnterpriseDto, file);
   }
 
   @Get()
@@ -35,11 +39,13 @@ export class EnterpriseController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('logo'))
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateEnterpriseDto: UpdateEnterpriseDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.enterpriseService.update(id, updateEnterpriseDto);
+    return this.enterpriseService.update(id, updateEnterpriseDto, file);
   }
 
   @Delete(':id')
