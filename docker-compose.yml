@@ -13,6 +13,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - easy-order-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d easy_order"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   app:
     build:
       context: .
@@ -22,13 +27,14 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     networks:
       - easy-order-network
-    #entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
+    entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
 
 volumes:
   postgres_data:

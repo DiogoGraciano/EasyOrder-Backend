@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsString({ message: 'Nome deve ser uma string' })
@@ -13,16 +13,4 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Senha é obrigatória' })
   @MinLength(6, { message: 'Senha deve ter pelo menos 6 caracteres' })
   password: string;
-
-  @IsOptional()
-  @IsString({ message: 'Telefone deve ser uma string' })
-  phone?: string;
-
-  @IsOptional()
-  @IsString({ message: 'CPF deve ser uma string' })
-  cpf?: string;
-
-  @IsOptional()
-  @IsString({ message: 'Endereço deve ser uma string' })
-  address?: string;
 }
