@@ -11,7 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
     networks:
       - easy-order-network
   app:
@@ -29,7 +28,7 @@ services:
       - /usr/src/app/node_modules
     networks:
       - easy-order-network
-    entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
+    #entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
 
 volumes:
   postgres_data:

@@ -16,4 +16,9 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
 
 RUN chown -R nestjs:nodejs /usr/src/app
+
 USER nestjs
+
+RUN npm run migration:run
+
+RUN exec npm run start:prod
