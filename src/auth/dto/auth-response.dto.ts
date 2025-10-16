@@ -4,7 +4,6 @@ export class AuthResponseDto {
     id: string;
     name: string;
     email: string;
-    photo?: string;
     role: string;
     isActive: boolean;
     createdAt: Date;
