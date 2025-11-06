@@ -280,10 +280,16 @@ export class OrderService {
     }
   }
 
-  private validateOrderCalculations(createOrderDto: CreateOrderDto): void {
+  private validateOrderCalculations(createOrderDto: CreateOrderDto): void;
+  private validateOrderCalculations(updateOrderDto: UpdateOrderDto): void;
+  private validateOrderCalculations(orderDto: CreateOrderDto | UpdateOrderDto): void {
+    if (!orderDto.items || !orderDto.totalAmount) {
+      return;
+    }
+
     let calculatedTotal = 0;
 
-    for (const item of createOrderDto.items) {
+    for (const item of orderDto.items) {
       const expectedSubtotal = item.quantity * item.unitPrice;
       if (Math.abs(item.subtotal - expectedSubtotal) > 0.01) {
         throw new BadRequestException(
@@ -295,10 +301,10 @@ export class OrderService {
       calculatedTotal += item.subtotal;
     }
 
-    if (Math.abs(createOrderDto.totalAmount - calculatedTotal) > 0.01) {
+    if (Math.abs(orderDto.totalAmount - calculatedTotal) > 0.01) {
       throw new BadRequestException(
         `Total do pedido incorreto. ` +
-          `Esperado: R$ ${calculatedTotal.toFixed(2)}, Informado: R$ ${createOrderDto.totalAmount.toFixed(2)}`,
+          `Esperado: R$ ${calculatedTotal.toFixed(2)}, Informado: R$ ${orderDto.totalAmount.toFixed(2)}`,
       );
     }
   }
@@ -361,20 +367,32 @@ export class OrderService {
 
     await this.validateOrderUpdate(order, updateOrderDto);
 
-    Object.assign(order, updateOrderDto);
+    if (updateOrderDto.items) {
+      await this.validateProductsAndStock(updateOrderDto.items);
+      await this.validateProductsBelongToEnterprise(
+        updateOrderDto.items,
+        updateOrderDto.enterpriseId || order.enterpriseId,
+      );
+      this.validateOrderCalculations(updateOrderDto);
+    }
 
+    if (order.items && order.items.length > 0) {
+      await this.orderItemRepository.delete({ orderId: order.id });
+    }
+
+    Object.assign(order, updateOrderDto);
     const savedOrder = await this.orderRepository.save(order);
 
-    await this.orderItemRepository.remove(order.items);
+    if (updateOrderDto.items && updateOrderDto.items.length > 0) {
+      const orderItems = updateOrderDto.items.map((item) =>
+        this.orderItemRepository.create({
+          ...item,
+          orderId: savedOrder.id,
+        }),
+      );
 
-    const orderItems = order.items.map((item) =>
-      this.orderItemRepository.create({
-        ...item,
-        orderId: savedOrder.id,
-      }),
-    );
-
-    await this.orderItemRepository.save(orderItems);
+      await this.orderItemRepository.save(orderItems);
+    }
 
     return this.findOne(savedOrder.id);
   }
@@ -498,6 +516,10 @@ export class OrderService {
       );
     }
 
+    if (order.items && order.items.length > 0) {
+      await this.orderItemRepository.delete({ orderId: order.id });
+    }
+    
     await this.orderRepository.remove(order);
   }
 }

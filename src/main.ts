@@ -24,7 +24,11 @@ async function bootstrap() {
 
   // Configuração de CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: [
+      process.env.CORS_ORIGIN || 'http://localhost:8081',
+      'http://localhost:8081', // React Native Web
+      'http://localhost:3000', // Backend
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'Put', 'OPTIONS'],
     allowedHeaders: [
       'Origin',
