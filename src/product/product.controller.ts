@@ -11,17 +11,20 @@ import {
   ValidationPipe,
   Query,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body(ValidationPipe) createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
@@ -40,6 +43,7 @@ export class ProductController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateProductDto: UpdateProductDto,
@@ -48,11 +52,13 @@ export class ProductController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
   }
 
   @Post(':id/photo')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('photo'))
   uploadPhoto(
     @Param('id') id: string,
@@ -62,6 +68,7 @@ export class ProductController {
   }
 
   @Patch(':id/stock')
+  @UseGuards(JwtAuthGuard)
   updateStock(@Param('id') id: string, @Body('quantity') quantity: number) {
     return this.productService.updateStock(id, quantity);
   }

@@ -440,6 +440,38 @@ export class OrderService {
     }
   }
 
+  async updateStatus(id: string, status: string): Promise<Order> {
+    const order = await this.findOne(id);
+
+    // Valida se o status é válido
+    if (!Object.values(OrderStatus).includes(status as OrderStatus)) {
+      throw new BadRequestException(
+        `Status inválido. Status válidos: ${Object.values(OrderStatus).join(', ')}`,
+      );
+    }
+
+    const newStatus = status as OrderStatus;
+
+    // Valida se o pedido já está finalizado
+    if (order.status === OrderStatus.COMPLETED) {
+      throw new BadRequestException(
+        'Não é possível alterar o status de um pedido já completado',
+      );
+    }
+
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new BadRequestException(
+        'Não é possível alterar o status de um pedido cancelado',
+      );
+    }
+
+    // Valida transição de status
+    this.validateStatusTransition(order.status, newStatus);
+
+    order.status = newStatus;
+    return await this.orderRepository.save(order);
+  }
+
   private validateStatusTransition(
     currentStatus: OrderStatus,
     newStatus: OrderStatus,

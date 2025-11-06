@@ -9,17 +9,20 @@ import {
   UseInterceptors,
   UploadedFile,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('customers')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body(ValidationPipe) createCustomerDto: CreateCustomerDto) {
     return this.customerService.create(createCustomerDto);
   }
@@ -35,6 +38,7 @@ export class CustomerController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateCustomerDto: UpdateCustomerDto,
@@ -43,11 +47,13 @@ export class CustomerController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.customerService.remove(id);
   }
 
   @Post(':id/photo')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('photo'))
   uploadPhoto(
     @Param('id') id: string,

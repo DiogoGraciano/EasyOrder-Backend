@@ -4,8 +4,8 @@ import {
   IsOptional,
   IsString,
   Length,
-  MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateEnterpriseDto {
   @IsNotEmpty({ message: 'O nome legal é obrigatório' })
@@ -29,7 +29,10 @@ export class CreateEnterpriseDto {
 
   @IsNotEmpty({ message: 'O CNPJ é obrigatório' })
   @IsString({ message: 'O CNPJ deve ser uma string' })
-  @MaxLength(14, { message: 'O CNPJ deve ter no máximo 14 caracteres' })
+  @Transform(({ value }) => {
+    return typeof value === 'string' ? value.replace(/\D/g, '') : value;
+  })
+  @Length(14, 14, { message: 'O CNPJ deve ter exatamente 14 dígitos' })
   cnpj: string;
 
   @IsNotEmpty({ message: 'O endereço é obrigatório' })

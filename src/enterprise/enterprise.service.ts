@@ -23,6 +23,11 @@ export class EnterpriseService {
     createEnterpriseDto: CreateEnterpriseDto,
     file?: Express.Multer.File,
   ): Promise<Enterprise> {
+    // Normaliza o CNPJ removendo formatação antes de validar e salvar
+    if (createEnterpriseDto.cnpj) {
+      createEnterpriseDto.cnpj = createEnterpriseDto.cnpj.replace(/\D/g, '');
+    }
+
     await this.validateEnterpriseCreation(createEnterpriseDto);
 
     const enterprise = this.enterpriseRepository.create(createEnterpriseDto);
@@ -224,6 +229,11 @@ export class EnterpriseService {
     file?: Express.Multer.File,
   ): Promise<Enterprise> {
     const enterprise = await this.findOne(id);
+
+    // Normaliza o CNPJ removendo formatação antes de validar e salvar
+    if (updateEnterpriseDto.cnpj) {
+      updateEnterpriseDto.cnpj = updateEnterpriseDto.cnpj.replace(/\D/g, '');
+    }
 
     await this.validateEnterpriseUpdate(enterprise, updateEnterpriseDto);
 
